@@ -10,6 +10,12 @@ public class FileConversionResultBuilder {
     private boolean successful;
     private String errorMessage;
 
+    private FileConversionResultBuilder() {}
+
+    public static FileConversionResultBuilder create() {
+        return new FileConversionResultBuilder();
+    }
+
     public FileConversionResultBuilder inputPath(String inputPath) {
         this.inputPath = inputPath;
         return this;
@@ -46,21 +52,14 @@ public class FileConversionResultBuilder {
     }
 
     public FileConversionResult build() {
-        validateRequiredFields();
-        return new FileConversionResult(inputPath, outputPath, inputSize,
-                outputSize, conversionTime, successful, errorMessage);
-    }
-
-    private void validateRequiredFields() {
-        if (inputPath == null || inputPath.trim().isEmpty()) {
-            throw new IllegalStateException("InputPath es requerido");
-        }
-        if (conversionTime == null) {
-            throw new IllegalStateException("ConversionTime es requerido");
-        }
-    }
-
-    public static FileConversionResultBuilder create() {
-        return new FileConversionResultBuilder();
+        return new FileConversionResult(
+                inputPath,
+                outputPath,
+                inputSize,
+                outputSize,
+                conversionTime,
+                successful,
+                errorMessage
+        );
     }
 }

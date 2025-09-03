@@ -1,5 +1,6 @@
 package org.example.domain.usecases;
 
+import org.example.domain.entities.BatchConversionResult;
 import org.example.domain.entities.FileConversionResult;
 import org.example.domain.entities.FileConversionResultBuilder;
 import org.example.domain.ports.BinaryToBase64ConverterPort;
@@ -7,10 +8,10 @@ import org.example.domain.ports.FileReaderPort;
 import org.example.domain.ports.FileWriterPort;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
-public class ConvertBinaryFileToBase64UseCase {
-    private final FileReaderPort fileReader;
+public class ConvertBinaryFileToBase64UseCase {private final FileReaderPort fileReader;
     private final FileWriterPort fileWriter;
     private final BinaryToBase64ConverterPort converter;
 
@@ -54,7 +55,7 @@ public class ConvertBinaryFileToBase64UseCase {
 
     private void validateInput(String inputPath) {
         if (inputPath == null || inputPath.trim().isEmpty()) {
-            throw new IllegalArgumentException("La ruta del archivo no puede estar vacía");
+            throw new IllegalArgumentException("La ruta del archivo no puede estar vacÃ­a");
         }
 
         if (!fileReader.fileExists(inputPath)) {
