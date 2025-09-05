@@ -1,0 +1,8 @@
+Cargar Archivo 
+java -jar CargarArchivo-1.0-SNAPSHOT.jar "ruta origen" "ruta destino"
+
+Base64 a Binario
+java -jar Base64ABinario-1.0-SNAPSHOT.jar archivo
+
+Filtro de Imágenes
+java -jar FiltroImagenes-1.0-SNAPSHOT.jar ruta_de_la_imagen_o_imagenes
