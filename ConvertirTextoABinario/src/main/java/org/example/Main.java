@@ -8,56 +8,38 @@ import java.nio.file.*;
 
 public class Main {
     public static void main(String[] args) {
+        ConvertTextFileUseCase useCase = new ConvertTextFileUseCase(
+                new TextToBinaryFileConverter()
+        );
+
         try {
-            // ✅ Caso 1: entrada por stdin
             if (args.length == 0) {
-                System.out.println("📥 Leyendo texto desde stdin...");
-
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        buffer.write(line.getBytes());
-                        buffer.write(System.lineSeparator().getBytes());
-                    }
+                // Si no hay args → stdin + nombre por defecto
+                if (System.in.available() > 0) {
+                    useCase.execute(System.in, "stdin.bin");
+                } else {
+                    System.out.println("Uso:");
+                    System.out.println("  java -jar ConvertirTextoABinario.jar archivo.txt");
+                    System.out.println("  cat archivo.txt | java -jar ConvertirTextoABinario.jar");
+                    System.exit(1);
                 }
-
-                byte[] binaryData = buffer.toByteArray();
-
-                // Guardar en archivo local
-                Path outputFile = Paths.get("salida.bin");
-                Files.write(outputFile, binaryData);
-                System.out.println("✅ Archivo binario guardado en: " + outputFile.toAbsolutePath());
-
-                // Enviar también a stdout (para pipe)
-                System.out.write(binaryData);
-                System.out.flush();
-                System.exit(0);
-            }
-
-            // ✅ Caso 2: con argumento (archivo de entrada)
-            if (args.length == 1) {
+            } else if (args.length == 1) {
                 String inputPath = args[0];
-
-                ConvertTextFileUseCase useCase = new ConvertTextFileUseCase(
-                        new TextToBinaryFileConverter()
-                );
-
-                useCase.execute(inputPath);
-
-                System.exit(0);
+                if (System.in.available() > 0) {
+                    // Pipe con nombre de referencia
+                    useCase.execute(System.in, inputPath);
+                } else {
+                    // Archivo directo
+                    useCase.execute(inputPath);
+                }
+            } else {
+                System.out.println("Uso inválido.");
+                System.exit(1);
             }
-
-            System.out.println("Uso:");
-            System.out.println("  • Archivo: java -jar convertidorArchivoABinario.jar <ruta_del_archivo>");
-            System.out.println("  • Pipe:    cat archivo.txt | java -jar convertidorArchivoABinario.jar");
-            System.exit(1);
 
         } catch (Exception e) {
-            System.err.println("❌ Error: " + e.getMessage());
             e.printStackTrace();
-            System.exit(2);
+            System.exit(1);
         }
     }
 }
