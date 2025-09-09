@@ -19,3 +19,6 @@ SALIDA 1 ENTRADA 7
 java -jar CargarArchivo-1.0-SNAPSHOT.jar archivo "ruta destino"| java -jar BuscarPalabraEnArchivoTexto-1.0-SNAPSHOT.jar "palabra a buscar"
 ->java -jar CargarArchivo-1.0-SNAPSHOT.jar prueba1.txt "C:\Users\camil\Downloads\ekko\"| java -jar BuscarPalabraEnArchivoTexto-1.0-SNAPSHOT.jar "bosque"
 
+
+SALIDA 7 ENTRADA 1
+java -jar BuscarPalabraEnArchivoTexto-1.0-SNAPSHOT.jar "bosque" C:\Users\camil\Downloads\Goku | java -jar .\CargarArchivo-1.0-SNAPSHOT.jar "C:\Users\camil\Downloads\ekko"
