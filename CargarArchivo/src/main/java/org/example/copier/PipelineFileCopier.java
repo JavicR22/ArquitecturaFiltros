@@ -3,6 +3,7 @@ package org.example.copier;
 import org.example.io.OutputSink;
 import org.example.io.StdinInputSource;
 import org.example.util.FileUtils;
+import org.example.validator.TextFileValidator;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -22,16 +23,22 @@ public class PipelineFileCopier extends FileCopier {
         StdinInputSource stdinSource = new StdinInputSource();
 
         try {
-            String content = stdinSource.readContent();
-            byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-            Path destino = directorioDestino.resolve("stdin_output.txt");
+            String pathString = stdinSource.readContent();
+            Path archivoOrigen = stdinSource.getFilePath();
+
+            TextFileValidator validator = new TextFileValidator();
+            validator.validateFile(archivoOrigen);
+
+            String originalFilename = archivoOrigen.getFileName().toString();
+            Path destino = directorioDestino.resolve(originalFilename);
             destino = FileUtils.resolveConflict(destino);
 
-            Files.write(destino, contentBytes, StandardOpenOption.CREATE);
+            Files.copy(archivoOrigen, destino, StandardCopyOption.REPLACE_EXISTING);
 
             if (pipelineOutput != null) {
                 try {
-                    pipelineOutput.writeContent(contentBytes);
+                    String destinationPath = destino.toAbsolutePath().toString();
+                    pipelineOutput.writeContent(destinationPath.getBytes(StandardCharsets.UTF_8));
                 } finally {
                     pipelineOutput.close();
                 }
@@ -48,8 +55,8 @@ public class PipelineFileCopier extends FileCopier {
 
         if (pipelineOutput != null) {
             try {
-                String content = Files.readString(archivoCopiado, StandardCharsets.UTF_8);
-                pipelineOutput.writeContent(content.getBytes(StandardCharsets.UTF_8));
+                String destinationPath = archivoCopiado.toAbsolutePath().toString();
+                pipelineOutput.writeContent(destinationPath.getBytes(StandardCharsets.UTF_8));
             } finally {
                 pipelineOutput.close();
             }

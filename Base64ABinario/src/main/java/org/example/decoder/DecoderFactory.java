@@ -10,6 +10,9 @@ public class DecoderFactory {
         if ("base64".equalsIgnoreCase(type.trim())) {
             return new Base64Decoder();
         }
-        throw new IllegalArgumentException("Tipo de decodificación no soportado: '" + type + "'. Solo se admite 'base64'.");
+        if ("base64binary".equalsIgnoreCase(type.trim())) {
+            return new Base64ToBinaryDecoder();
+        }
+        throw new IllegalArgumentException("Tipo de decodificación no soportado: '" + type + "'. Se admite 'base64' y 'base64binary'.");
     }
 }

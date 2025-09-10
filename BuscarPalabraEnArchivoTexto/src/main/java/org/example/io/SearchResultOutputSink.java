@@ -11,17 +11,17 @@ import java.time.format.DateTimeFormatter;
 
 public class SearchResultOutputSink implements OutputSink {
     private final Path outputPath;
-    private final boolean outputToStdout;
+    private final boolean sendPathToStdout;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public SearchResultOutputSink(Path outputPath) {
         this.outputPath = outputPath;
-        this.outputToStdout = false;
+        this.sendPathToStdout = false;
     }
 
-    public SearchResultOutputSink(Path outputPath, boolean outputToStdout) {
+    public SearchResultOutputSink(Path outputPath, boolean sendPathToStdout) {
         this.outputPath = outputPath;
-        this.outputToStdout = outputToStdout;
+        this.sendPathToStdout = sendPathToStdout;
     }
 
     @Override
@@ -37,9 +37,11 @@ public class SearchResultOutputSink implements OutputSink {
         Files.writeString(outputPath, content.toString(),
                 StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
-        if (outputToStdout) {
-            System.out.print(content.toString());
+        if (sendPathToStdout) {
+            System.out.print(outputPath.toAbsolutePath().toString());
         }
+
+        System.err.println("Búsqueda completada. Resultados en: " + outputPath.getFileName());
     }
 
     private void writeDirectoryResult(StringBuilder content, SearchResult result) {

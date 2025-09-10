@@ -18,7 +18,7 @@ public class Main {
                 StdoutOutputSink stdoutSink = new StdoutOutputSink();
                 Path archivoCopiado = pipelineCopier.copyFromStdin(destino, stdoutSink);
 
-                System.err.println("   Archivo copiado desde stdin en: " + archivoCopiado.toAbsolutePath());
+                System.err.println("   Archivo copiado desde ruta recibida en: " + archivoCopiado.toAbsolutePath());
 
             } catch (Exception e) {
                 System.err.println("❌ Error: " + e.getMessage());
@@ -46,6 +46,7 @@ public class Main {
             System.err.println("Uso:");
             System.err.println("  Modo normal: java -jar programa.jar <ruta_origen> <directorio_destino>");
             System.err.println("  Modo pipeline: componente_anterior | java -jar programa.jar <directorio_destino>");
+            System.err.println("    (El componente anterior debe enviar la ruta del archivo por stdout)");
             System.exit(1);
         }
     }

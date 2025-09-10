@@ -1,6 +1,7 @@
 1)	Cargar Archivo 
 java -jar CargarArchivo-1.0-SNAPSHOT.jar "ruta origen" "ruta destino"
 ->java -jar CargarArchivo-1.0-SNAPSHOT.jar "C:\Users\camil\Downloads\Goku\Cuento1.txt" "C:\Users\camil\Downloads\ekko"
+->echo "C:\Users\camil\Downloads\Goku\Cuento1.txt" | java -jar .\CargarArchivo-1.0-SNAPSHOT.jar "C:\Users\camil\Downloads\ekko"
 
 3)	Base64 a Binario
 java -jar Base64ABinario-1.0-SNAPSHOT.jar archivo
@@ -12,12 +13,7 @@ java -jar FiltroImagenes-1.0-SNAPSHOT.jar ruta_de_la_imagen_o_imagenes
 
 7)	Buscar Palabra en Archivo de texto
 ->java -jar BuscarPalabraEnArchivoTexto-1.0-SNAPSHOT.jar "bosque" C:\Users\camil\Downloads\Goku
-->cat Cuento1.txt | java -jar .\BuscarPalabraEnArchivoTexto-1.0-SNAPSHOT.jar "bosque"
-
-
-SALIDA 1 ENTRADA 7
-java -jar CargarArchivo-1.0-SNAPSHOT.jar archivo "ruta destino"| java -jar BuscarPalabraEnArchivoTexto-1.0-SNAPSHOT.jar "palabra a buscar"
-->java -jar CargarArchivo-1.0-SNAPSHOT.jar prueba1.txt "C:\Users\camil\Downloads\ekko\"| java -jar BuscarPalabraEnArchivoTexto-1.0-SNAPSHOT.jar "bosque"
+->echo "C:\Users\camil\Downloads\Goku\" | java -jar BuscarPalabraEnArchivoTexto-1.0-SNAPSHOT.jar "bosque"
 
 
 SALIDA 7 ENTRADA 1

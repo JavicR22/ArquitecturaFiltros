@@ -47,7 +47,7 @@ public class TextFileValidator implements FileValidator {
 
         byte[] bytes = Files.readAllBytes(file);
         for (byte b : bytes) {
-            if (b < 0x09 && b != 0x0A && b != 0x0D) {
+            if (b == 0x00 || (b > 0x00 && b < 0x09 && b != 0x0A && b != 0x0D)) {
                 throw new IllegalArgumentException("El archivo contiene caracteres binarios y no es un archivo de texto válido");
             }
         }

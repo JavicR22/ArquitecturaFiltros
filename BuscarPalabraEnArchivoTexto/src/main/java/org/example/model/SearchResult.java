@@ -14,9 +14,9 @@ public class SearchResult {
     private final int filesProcessed;
     private final int filesWithMatches;
 
-    public SearchResult(String searchWord, LocalDateTime timestamp, InputMode mode, 
-                       Map<Path, FileSearchResult> fileResults, int totalOccurrences, 
-                       int filesProcessed, int filesWithMatches) {
+    public SearchResult(String searchWord, LocalDateTime timestamp, InputMode mode,
+                        Map<Path, FileSearchResult> fileResults, int totalOccurrences,
+                        int filesProcessed, int filesWithMatches) {
         this.searchWord = searchWord;
         this.timestamp = timestamp;
         this.mode = mode;

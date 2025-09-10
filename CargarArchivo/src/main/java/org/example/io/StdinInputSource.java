@@ -4,10 +4,10 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.Paths;
 
 public class StdinInputSource implements InputSource {
-    private Path tempFile;
+    private String filePath;
 
     @Override
     public String readContent() throws IOException {
@@ -15,30 +15,27 @@ public class StdinInputSource implements InputSource {
             throw new IllegalArgumentException("No hay datos disponibles en stdin");
         }
 
-        tempFile = Files.createTempFile("stdin_input", ".txt");
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
-             BufferedWriter writer = Files.newBufferedWriter(tempFile, StandardCharsets.UTF_8, StandardOpenOption.CREATE)) {
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                writer.write(line);
-                writer.newLine();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
+            filePath = reader.readLine();
+            if (filePath == null || filePath.trim().isEmpty()) {
+                throw new IllegalArgumentException("No se recibió una ruta de archivo válida desde stdin");
             }
+            filePath = filePath.trim();
         }
 
-        return Files.readString(tempFile, StandardCharsets.UTF_8);
+        return filePath;
     }
 
     @Override
     public void close() throws IOException {
-        if (tempFile != null && Files.exists(tempFile)) {
-            Files.delete(tempFile);
-        }
+        // No cleanup needed for path-based approach
     }
 
-    public Path getTempFile() {
-        return tempFile;
+    public Path getFilePath() {
+        if (filePath == null) {
+            throw new IllegalStateException("No se ha leído ninguna ruta de archivo");
+        }
+        return Paths.get(filePath);
     }
 
     public void cleanup() throws IOException {

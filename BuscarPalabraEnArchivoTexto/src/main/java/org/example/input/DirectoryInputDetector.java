@@ -4,7 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class DirectoryInputDetector implements InputDetector {
-    
+
     @Override
     public boolean canHandle(String[] args) {
         if (args.length != 2) return false;
