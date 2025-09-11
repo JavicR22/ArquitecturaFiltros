@@ -18,10 +18,14 @@ public class StdoutOutputSink implements org.example.io.OutputSink {
             // Imagen original - la enviamos tal como está
             writeImageToStdout(image, extension);
             originalSent = true;
+
+            System.out.println("{\"nombre\":\"" + filterName + "." + extension+"}");
+
         } else if (filterName != null && !originalSent) {
             // Primera imagen con filtro (si no se envió la original)
             writeImageToStdout(image, extension);
             originalSent = true;
+            System.out.println("{\"extension\":\""+ extension+"}");
         }
         // Las demás imágenes se ignoran en modo stdout para mantener la pipeline
     }

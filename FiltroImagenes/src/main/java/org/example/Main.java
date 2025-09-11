@@ -18,8 +18,11 @@ public class Main {
                 processor = ProcessorFactory.createPipelineProcessor();
             } else if (args.length == 1) {
                 // Modo archivo: procesar carpeta
+                System.out.println(args[0]);
+                System.out.flush();
                 System.err.println("Modo archivo: procesando carpeta " + args[0]);
                 processor = ProcessorFactory.createFileProcessor(args[0]);
+
             } else {
                 mostrarUso();
                 return;

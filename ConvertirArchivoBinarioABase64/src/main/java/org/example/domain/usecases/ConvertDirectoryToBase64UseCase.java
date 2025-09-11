@@ -5,7 +5,9 @@ import org.example.domain.entities.BatchConversionResultBuilder;
 import org.example.domain.entities.FileConversionResult;
 import org.example.domain.ports.DirectoryReaderPort;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -27,6 +29,19 @@ public class ConvertDirectoryToBase64UseCase {
         this.executorService = Executors.newFixedThreadPool(threadCount);
     }
 
+    private List<String> listAllFilesRecursive(String directoryPath) throws IOException {
+        List<String> files = directoryReader.listFiles(directoryPath);
+        List<String> allFiles = new ArrayList<>();
+
+        for (String filePath : files) {
+            if (directoryReader.isDirectory(filePath)) {
+                allFiles.addAll(listAllFilesRecursive(filePath)); // recursión
+            } else {
+                allFiles.add(filePath);
+            }
+        }
+        return allFiles;
+    }
     public BatchConversionResult execute(String directoryPath) {
         LocalDateTime startTime = LocalDateTime.now();
 
@@ -38,7 +53,7 @@ public class ConvertDirectoryToBase64UseCase {
             validateInput(directoryPath);
 
             // Obtener lista de archivos del directorio
-            List<String> allFiles = directoryReader.listFiles(directoryPath);
+            List<String> allFiles = listAllFilesRecursive(directoryPath);
 
             // Filtrar solo archivos binarios
             List<String> binaryFiles = allFiles.stream()

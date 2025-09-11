@@ -6,6 +6,7 @@ import org.example.domain.entities.BatchConversionResult;
 import org.example.infrastructure.config.DependencyInjection;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
 public class Main {
@@ -31,20 +32,26 @@ public class Main {
 
                 byte[] binaryData = buffer.toByteArray();
 
-                // Convertir a Base64
-                String base64 = java.util.Base64.getEncoder().encodeToString(binaryData);
+                String ruta = new String(binaryData, StandardCharsets.UTF_8).trim();
 
-                // Guardar en archivo local
-                Path outputFile = Paths.get("salida.base64");
-                Files.write(outputFile, base64.getBytes());
-                System.out.println("✅ Archivo Base64 guardado en: " + outputFile.toAbsolutePath());
+//               Si viene entre comillas, quitarlas
+                if (ruta.startsWith("\"") && ruta.endsWith("\"")) {
+                    ruta = ruta.substring(1, ruta.length() - 1);
+                }
 
-                // Enviar también a stdout (para pipes)
-                System.out.println(base64);
-                System.exit(0);
+
+                if (Files.isDirectory(Paths.get(ruta))) {
+                    System.out.println("🚀 Iniciando conversión por lotes para el directorio: " + ruta);
+                    BatchConversionResult batchResult = service.convertDirectoryToBase64(ruta);
+                    service.printBatchConversionResult(batchResult);
+                    System.exit(batchResult.hasFailures() ? 1 : 0);
+
+                }
+
+
+
             }
 
-            // ✅ Caso 2: archivo o directorio
             if (args.length == 1) {
                 String inputPath = args[0];
 

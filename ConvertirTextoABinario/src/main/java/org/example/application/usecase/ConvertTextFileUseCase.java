@@ -25,7 +25,7 @@ public class ConvertTextFileUseCase {
         try (InputStream in = Files.newInputStream(inputFile)) {
             converter.convertToFile(in, outputFile);
         }
-        System.out.println("✅ Archivo binario generado: " + outputFile);
+        System.err.println("✅ Archivo binario generado: " + outputFile);
     }
 
     // Entrada desde stdin → salida por stdout
@@ -38,13 +38,13 @@ public class ConvertTextFileUseCase {
         String name = inputFile.getFileName().toString();
         int dotIndex = name.lastIndexOf(".");
         String baseName = (dotIndex == -1) ? name : name.substring(0, dotIndex);
-        String extension = (dotIndex == -1) ? "" : name.substring(dotIndex);
 
         Path parent = inputFile.getParent();
         if (parent == null) {
-            parent = Paths.get("."); // ✅ directorio actual
+            parent = Paths.get("."); // directorio actual
         }
 
-        return parent.resolve(baseName + "Binario" + extension).toString();
+        // Siempre devolverá con extensión .bin
+        return parent.resolve(baseName + "Binario.bin").toString();
     }
 }

@@ -27,15 +27,15 @@ public class LocalDirectoryReader implements DirectoryReaderPort {
             throw new IOException("La ruta no es un directorio: " + directoryPath);
         }
 
-        System.out.println("🔍 Explorando directorio: " + directoryPath);
+        System.out.println("🔍 Explorando directorio (recursivo): " + directoryPath);
 
-        try (var stream = Files.list(path)) {
+        try (var stream = Files.walk(path)) { // 👈 walk en lugar de list
             List<String> files = stream
-                    .filter(Files::isRegularFile)
+                    .filter(Files::isRegularFile) // solo archivos
                     .map(Path::toString)
                     .collect(Collectors.toList());
 
-            System.out.println("📁 Archivos encontrados: " + files.size());
+            System.out.println("📁 Archivos encontrados (incluyendo subdirectorios): " + files.size());
             files.forEach(file -> System.out.println("   • " + file));
 
             return files;

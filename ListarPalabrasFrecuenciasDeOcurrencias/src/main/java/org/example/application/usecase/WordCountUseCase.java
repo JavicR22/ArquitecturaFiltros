@@ -38,23 +38,25 @@ public class WordCountUseCase {
             throws IOException, InterruptedException {
         DirectoryWordCountResult dirResult = new DirectoryWordCountResult(dirPath);
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dirPath))) {
-            for (Path entry : stream) {
-                if (Files.isRegularFile(entry)) {
-                    Future<WordCountResult> future = executor.submit(() -> {
-                        String content = Files.readString(entry);
+        try (Stream<Path> stream = Files.walk(Paths.get(dirPath))) {
+            List<Future<WordCountResult>> futures = stream
+                    .filter(Files::isRegularFile) // solo archivos
+                    .map(path -> executor.submit(() -> {
+                        String content = Files.readString(path);
                         int count = countWordOccurrences(content, word);
-                        return new WordCountResult(entry.toString(), Map.of(word, count));
-                    });
+                        return new WordCountResult(path.toString(), Map.of(word, count));
+                    }))
+                    .collect(Collectors.toList());
 
-                    try {
-                        dirResult.addFileResult(future.get());
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
+            for (Future<WordCountResult> future : futures) {
+                try {
+                    dirResult.addFileResult(future.get());
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
                 }
             }
         }
+
         return dirResult;
     }
 
