@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class ImageProcessor {
-    private final InputSource inputSource;
-    private final OutputSink outputSink;
-    private final List<ImageFilter> filters;
+    protected final InputSource inputSource;
+    protected final OutputSink outputSink;
+    protected final List<ImageFilter> filters;
 
     public ImageProcessor(InputSource inputSource, OutputSink outputSink, List<ImageFilter> filters) {
         if (inputSource == null) {
@@ -31,7 +31,7 @@ public class ImageProcessor {
         this.filters = filters;
     }
 
-    public void procesarImagenes() throws IOException {
+    public String procesar() throws IOException {
         if (!inputSource.hasImages()) {
             throw new IOException("No hay imágenes disponibles para procesar");
         }
@@ -49,6 +49,8 @@ public class ImageProcessor {
         }
 
         System.err.println("Procesamiento completado.");
+
+        return null;
     }
 
     private void procesarImagen(ImageData imageData) {

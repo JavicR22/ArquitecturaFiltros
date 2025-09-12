@@ -26,12 +26,10 @@ public class SearchUtils {
     }
 
     public static boolean isStdinAvailable() {
-        // When System.console() is null, we're likely in a pipeline or redirect
         if (System.console() == null) {
             return true;
         }
 
-        // Fallback check for available bytes
         try {
             return System.in.available() > 0;
         } catch (IOException e) {
@@ -47,14 +45,53 @@ public class SearchUtils {
 
     private static boolean isTextFile(Path file) {
         String fileName = file.getFileName().toString().toLowerCase();
-        return TEXT_EXTENSIONS.stream().anyMatch(fileName::endsWith);
+
+        // Check extension first
+        if (!TEXT_EXTENSIONS.stream().anyMatch(fileName::endsWith)) {
+            return false;
+        }
+
+        // Additional check for binary content
+        try {
+            if (!Files.isRegularFile(file) || !Files.isReadable(file)) {
+                return false;
+            }
+
+            // Read first 1024 bytes to check for binary content
+            byte[] sample = Files.readAllBytes(file);
+            if (sample.length > 1024) {
+                sample = Arrays.copyOf(sample, 1024);
+            }
+
+            // Check for null bytes (common in binary files)
+            for (byte b : sample) {
+                if (b == 0) {
+                    return false;
+                }
+            }
+
+            // Try to decode as UTF-8
+            return validateUtf8Content(sample);
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public static String readDirectoryPathFromStdin(InputStream stdin) throws IOException {
+        byte[] pathBytes = stdin.readAllBytes();
+        String path = new String(pathBytes, StandardCharsets.UTF_8).trim();
+
+        if (path.isEmpty()) {
+            throw new IOException("No se recibió ruta de directorio desde stdin");
+        }
+
+        return path;
     }
 
     public static Path createTempFileFromStdin(InputStream stdin) throws IOException {
         Path tempFile = Files.createTempFile("stdin_input", ".txt");
         Files.copy(stdin, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
-        // Validate UTF-8 content
         byte[] content = Files.readAllBytes(tempFile);
         if (!validateUtf8Content(content)) {
             Files.deleteIfExists(tempFile);

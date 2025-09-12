@@ -23,12 +23,12 @@ public class DirectoryInputSource implements InputSource {
     @Override
     public List<Path> getInputFiles() throws IOException {
         int maxDepth = includeSubdirectories ? Integer.MAX_VALUE : 1;
-        
-        return SearchUtils.filterTextFiles(
-            Files.walk(directory, maxDepth)
+
+        List<Path> allFiles = Files.walk(directory, maxDepth)
                 .filter(Files::isRegularFile)
-                .toList()
-        );
+                .toList();
+
+        return SearchUtils.filterTextFiles(allFiles);
     }
 
     @Override

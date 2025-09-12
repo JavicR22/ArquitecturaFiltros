@@ -5,40 +5,48 @@ import org.example.util.SearchUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class StdinInputSource implements InputSource {
-    private Path tempFile;
+    private List<Path> inputFiles;
 
     @Override
     public List<Path> getInputFiles() throws IOException {
-        if (tempFile == null) {
+        if (inputFiles == null) {
             try {
-                tempFile = SearchUtils.createTempFileFromStdin(System.in);
+                String directoryPath = SearchUtils.readDirectoryPathFromStdin(System.in);
+                Path directory = Paths.get(directoryPath);
 
-                // Check if the temp file has content
-                if (Files.size(tempFile) == 0) {
-                    Files.deleteIfExists(tempFile);
-                    throw new IOException("No hay datos disponibles en stdin");
+                if (!Files.exists(directory)) {
+                    throw new IOException("El directorio no existe: " + directoryPath);
+                }
+
+                if (!Files.isDirectory(directory)) {
+                    throw new IOException("La ruta no es un directorio: " + directoryPath);
+                }
+
+                try (Stream<Path> files = Files.list(directory)) {
+                    List<Path> allFiles = files
+                            .filter(Files::isRegularFile)
+                            .toList();
+
+                    inputFiles = SearchUtils.filterTextFiles(allFiles);
+
+                    if (inputFiles.isEmpty()) {
+                        throw new IOException("No se encontraron archivos de texto en el directorio: " + directoryPath);
+                    }
                 }
             } catch (IOException e) {
-                if (tempFile != null) {
-                    Files.deleteIfExists(tempFile);
-                }
-                throw new IOException("Error al leer datos de stdin: " + e.getMessage(), e);
+                throw new IOException("Error al procesar directorio desde stdin: " + e.getMessage(), e);
             }
         }
-        return List.of(tempFile);
+        return inputFiles;
     }
 
     @Override
     public void cleanup() {
-        if (tempFile != null) {
-            try {
-                Files.deleteIfExists(tempFile);
-            } catch (IOException e) {
-                System.err.println("Advertencia: No se pudo eliminar archivo temporal: " + tempFile);
-            }
-        }
+        // No cleanup needed for directory-based input
     }
 }

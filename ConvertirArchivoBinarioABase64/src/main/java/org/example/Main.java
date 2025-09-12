@@ -3,6 +3,7 @@ package org.example;
 import org.example.application.service.FileConversionService;
 import org.example.domain.entities.FileConversionResult;
 import org.example.domain.entities.BatchConversionResult;
+import org.example.domain.usecases.BinarioABase64Process;
 import org.example.infrastructure.config.DependencyInjection;
 
 import java.io.*;
@@ -11,11 +12,9 @@ import java.nio.file.*;
 
 public class Main {
     public static void main(String[] args) {
-        DependencyInjection di = null;
 
         try {
-            di = DependencyInjection.getInstance();
-            FileConversionService service = di.getFileConversionService();
+
 
             // ✅ Caso 1: stdin → stdout + archivo local
             if (args.length == 0) {
@@ -34,43 +33,15 @@ public class Main {
 
                 String ruta = new String(binaryData, StandardCharsets.UTF_8).trim();
 
-//               Si viene entre comillas, quitarlas
-                if (ruta.startsWith("\"") && ruta.endsWith("\"")) {
-                    ruta = ruta.substring(1, ruta.length() - 1);
-                }
-
-
-                if (Files.isDirectory(Paths.get(ruta))) {
-                    System.out.println("🚀 Iniciando conversión por lotes para el directorio: " + ruta);
-                    BatchConversionResult batchResult = service.convertDirectoryToBase64(ruta);
-                    service.printBatchConversionResult(batchResult);
-                    System.exit(batchResult.hasFailures() ? 1 : 0);
-
-                }
-
-
+                BinarioABase64Process binarioABase64Process = new BinarioABase64Process();
+                binarioABase64Process.process(ruta);
 
             }
 
             if (args.length == 1) {
                 String inputPath = args[0];
-
-                if (Files.isDirectory(Paths.get(inputPath))) {
-                    System.out.println("🚀 Iniciando conversión por lotes para el directorio: " + inputPath);
-                    BatchConversionResult batchResult = service.convertDirectoryToBase64(inputPath);
-                    service.printBatchConversionResult(batchResult);
-                    System.exit(batchResult.hasFailures() ? 1 : 0);
-
-                } else if (Files.isRegularFile(Paths.get(inputPath))) {
-                    System.out.println("🚀 Iniciando conversión de archivo individual: " + inputPath);
-                    FileConversionResult result = service.convertBinaryFileToBase64(inputPath);
-                    service.printConversionResult(result);
-                    System.exit(result.isSuccessful() ? 0 : 1);
-
-                } else {
-                    System.err.println("❌ La ruta especificada no es un archivo ni directorio válido: " + inputPath);
-                    System.exit(1);
-                }
+                BinarioABase64Process binarioABase64Process = new BinarioABase64Process();
+                binarioABase64Process.process(inputPath);
             }
 
             System.out.println("Uso:");
@@ -83,10 +54,6 @@ public class Main {
             System.err.println("❌ Error inesperado: " + e.getMessage());
             e.printStackTrace();
             System.exit(2);
-        } finally {
-            if (di != null) {
-                di.shutdown();
-            }
         }
     }
 }

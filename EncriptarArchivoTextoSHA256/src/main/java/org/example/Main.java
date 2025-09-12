@@ -1,11 +1,8 @@
 package org.example;
 
 
-import org.example.hashing.HashService;
 import org.example.hashing.SHA256HashService;
 import org.example.io.FileNameGenerator;
-import org.example.io.InputReader;
-import org.example.io.OutputWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -57,14 +54,7 @@ public class Main {
                 // Imprimir en consola
                 System.err.println(hash);
 
-                // Nombre nuevo: nombreOriginalEncriptadoSHA256.txt
-                String outputFileName = fileNameGenerator.generate(inputFile, "EncriptadoSHA256", ".txt");
-                Path outputFile = inputFile.getParent() == null
-                        ? Paths.get(outputFileName)   // directorio actual
-                        : inputFile.getParent().resolve(outputFileName);
-
-                Files.writeString(outputFile, hash);
-                System.err.println("✅ Hash guardado en: " + outputFile.toAbsolutePath());
+                hashService.process(ruta);
 
             } else if (args.length == 1) {
                 // Caso archivo
@@ -87,15 +77,7 @@ public class Main {
                 System.err.println(hash);
 
                 // Nombre nuevo: nombreOriginalEncriptadoSHA256.txt
-                String outputFileName = fileNameGenerator.generate(inputFile, "EncriptadoSHA256", ".txt");
-                Path outputFile = inputFile.getParent() == null
-                        ? Paths.get(outputFileName)   // directorio actual
-                        : inputFile.getParent().resolve(outputFileName);
-
-                Files.writeString(outputFile, hash);
-                System.err.println("✅ Hash guardado en: " + outputFile.toAbsolutePath());
-                System.out.println(outputFile.toAbsolutePath());
-                System.out.flush();
+                hashService.process(inputPath);
 
 
             } else {

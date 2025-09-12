@@ -31,18 +31,20 @@ public class Main {
             if (args.length == 1) {
                 // stdin
                 targetWord = args[0];
-                System.out.println("📥 Leyendo texto desde stdin...");
+                System.err.println("📥 Leyendo texto desde stdin...");
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                try (InputStream in = System.in) {
-                    byte[] chunk = new byte[8192];
-                    int bytesRead;
-                    while ((bytesRead = in.read(chunk)) != -1) {
-                        buffer.write(chunk, 0, bytesRead);
-                    }
+                String ruta = buffer.toString();
+                if (ruta.startsWith("\"") && ruta.endsWith("\"")) {
+                    ruta = ruta.substring(1, ruta.length() - 1);
                 }
-                String content = buffer.toString();
-                WordCountResult result = useCase.countSpecificWordFromString(content, "stdin", targetWord);
-                reportWriter.writeToStdout(result);
+                System.err.println(ruta);
+                DirectoryWordCountResult result = useCase.countSpecificWordInDirectory(ruta, targetWord);
+                reportWriter.writeDirectoryToStdout(result);
+
+                Path outputFile = Paths.get("reporte_directorio.txt");
+                reportWriter.writeDirectoryReport(result, outputFile.toString());
+                System.out.println(outputFile.toAbsolutePath());
+                System.out.flush();
                 return;
             } else {
                 inputPath = args[0];
@@ -55,6 +57,8 @@ public class Main {
 
                 Path outputFile = Paths.get("reporte_directorio.txt");
                 reportWriter.writeDirectoryReport(result, outputFile.toString());
+                System.out.println(outputFile.toAbsolutePath());
+                System.out.flush();
             } else if (Files.isRegularFile(Paths.get(inputPath))) {
                 WordCountResult result = useCase.countSpecificWordInFile(inputPath, targetWord);
                 reportWriter.writeToStdout(result);

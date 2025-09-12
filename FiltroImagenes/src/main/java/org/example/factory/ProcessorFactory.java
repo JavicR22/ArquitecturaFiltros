@@ -3,6 +3,7 @@ package org.example.factory;
 import org.example.filters.*;
 import org.example.io.*;
 import org.example.processor.ImageProcessor;
+import org.example.processor.ThreadedImageProcessor;
 
 import java.io.File;
 import java.util.Arrays;
@@ -16,6 +17,14 @@ public class ProcessorFactory {
         List<ImageFilter> filters = createDefaultFilters();
 
         return new ImageProcessor(inputSource, outputSink, filters);
+    }
+
+    public static ThreadedImageProcessor createEnhancedFileProcessor(String directoryPath) {
+        InputSource inputSource = new RecursiveFileInputSource(directoryPath);
+        OutputSink outputSink = new EnhancedFileOutputSink(new File(directoryPath));
+        List<ImageFilter> filters = createDefaultFilters();
+
+        return new ThreadedImageProcessor(inputSource, outputSink, filters, 3);
     }
 
     public static ImageProcessor createPipelineProcessor() {

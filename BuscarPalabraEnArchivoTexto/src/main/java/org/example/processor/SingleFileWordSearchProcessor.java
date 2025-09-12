@@ -31,9 +31,9 @@ public class SingleFileWordSearchProcessor implements WordSearchProcessor {
         for (int i = 0; i < lines.size(); i++) {
             String line = caseSensitive ? lines.get(i) : lines.get(i).toLowerCase();
             int lineOccurrences = countOccurrences(line, searchWord);
-            
+
             if (lineOccurrences > 0) {
-                matchingLines.add(i + 1); // Line numbers start at 1
+                matchingLines.add(i + 1);
                 totalOccurrences += lineOccurrences;
             }
         }
@@ -43,25 +43,25 @@ public class SingleFileWordSearchProcessor implements WordSearchProcessor {
         fileResults.put(file, new SearchResult.FileSearchResult(totalOccurrences, matchingLines, fileSize));
 
         return new SearchResult(
-            word,
-            LocalDateTime.now(),
-            InputMode.STDIN,
-            fileResults,
-            totalOccurrences,
-            1,
-            totalOccurrences > 0 ? 1 : 0
+                word,
+                LocalDateTime.now(),
+                InputMode.STDIN,
+                fileResults,
+                totalOccurrences,
+                1,
+                totalOccurrences > 0 ? 1 : 0
         );
     }
 
     private int countOccurrences(String text, String word) {
         int count = 0;
         int index = 0;
-        
+
         while ((index = text.indexOf(word, index)) != -1) {
             count++;
             index += word.length();
         }
-        
+
         return count;
     }
 }

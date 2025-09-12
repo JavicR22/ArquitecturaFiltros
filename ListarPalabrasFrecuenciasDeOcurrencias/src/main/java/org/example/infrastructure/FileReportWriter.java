@@ -14,16 +14,16 @@ import java.util.Map;
 public class FileReportWriter {
 
     public void writeToStdout(WordCountResult result) {
-        System.out.println("📄 Archivo: " + result.getFileName());
+        System.err.println("📄 Archivo: " + result.getFileName());
         result.getWordCounts().forEach((word, count) ->
-                System.out.println("   '" + word + "' → " + count + " ocurrencias"));
-        System.out.println("   Total: " + result.getTotalOccurrences());
+                System.err.println("   '" + word + "' → " + count + " ocurrencias"));
+        System.err.println("   Total: " + result.getTotalOccurrences());
     }
 
     public void writeDirectoryToStdout(DirectoryWordCountResult result) {
-        System.out.println("📂 Directorio: " + result.getDirectoryPath());
+        System.err.println("📂 Directorio: " + result.getDirectoryPath());
         result.getFileResults().forEach(this::writeToStdout);
-        System.out.println("📊 Total en directorio: " + result.getTotalOccurrences());
+        System.err.println("📊 Total en directorio: " + result.getTotalOccurrences());
     }
 
     public void writeToFile(WordCountResult result, String outputPath) throws IOException {
@@ -34,7 +34,7 @@ public class FileReportWriter {
         sb.append("   Total: ").append(result.getTotalOccurrences()).append("\n");
 
         Files.writeString(Path.of(outputPath), sb.toString());
-        System.out.println("✅ Reporte guardado en: " + outputPath);
+        System.err.println("✅ Reporte guardado en: " + outputPath);
     }
 
     public void writeDirectoryReport(DirectoryWordCountResult result, String outputPath) throws IOException {
@@ -51,6 +51,6 @@ public class FileReportWriter {
         sb.append("📊 Total en directorio: ").append(result.getTotalOccurrences()).append("\n");
 
         Files.writeString(Path.of(outputPath), sb.toString());
-        System.out.println("✅ Reporte guardado en: " + outputPath);
+        System.err.println("✅ Reporte guardado en: " + outputPath);
     }
 }

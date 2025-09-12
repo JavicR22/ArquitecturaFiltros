@@ -11,24 +11,37 @@ import java.time.format.DateTimeFormatter;
 
 public class SearchResultOutputSink implements OutputSink {
     private final Path outputPath;
+    private final boolean sendPathToStdout;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public SearchResultOutputSink(Path outputPath) {
         this.outputPath = outputPath;
+        this.sendPathToStdout = false;
+    }
+
+    public SearchResultOutputSink(Path outputPath, boolean sendPathToStdout) {
+        this.outputPath = outputPath;
+        this.sendPathToStdout = sendPathToStdout;
     }
 
     @Override
     public void writeResult(SearchResult result) throws IOException {
         StringBuilder content = new StringBuilder();
-        
+
         if (result.getMode() == InputMode.DIRECTORY) {
             writeDirectoryResult(content, result);
         } else {
             writeStdinResult(content, result);
         }
-        
-        Files.writeString(outputPath, content.toString(), 
-            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+        Files.writeString(outputPath, content.toString(),
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+        if (sendPathToStdout) {
+            System.out.print(outputPath.toAbsolutePath().toString());
+        }
+
+        System.err.println("Búsqueda completada. Resultados en: " + outputPath.getFileName());
     }
 
     private void writeDirectoryResult(StringBuilder content, SearchResult result) {
@@ -39,13 +52,13 @@ public class SearchResultOutputSink implements OutputSink {
 
         result.getFileResults().forEach((path, fileResult) -> {
             content.append("Archivo: ").append(path.getFileName()).append(" (")
-                   .append(formatFileSize(fileResult.getFileSizeBytes())).append(")\n");
+                    .append(formatFileSize(fileResult.getFileSizeBytes())).append(")\n");
             content.append("Ocurrencias: ").append(fileResult.getOccurrences()).append("\n");
-            
+
             if (!fileResult.getLineNumbers().isEmpty()) {
                 content.append("Líneas: ");
                 content.append(String.join(", ", fileResult.getLineNumbers().stream()
-                    .map(String::valueOf).toArray(String[]::new)));
+                        .map(String::valueOf).toArray(String[]::new)));
                 content.append("\n");
             }
             content.append("\n");
@@ -65,16 +78,16 @@ public class SearchResultOutputSink implements OutputSink {
         content.append("========================================\n\n");
 
         var fileResult = result.getFileResults().values().iterator().next();
-        long totalLines = fileResult.getLineNumbers().isEmpty() ? 0 : 
-            fileResult.getLineNumbers().stream().mapToLong(Integer::longValue).max().orElse(0);
-        
+        long totalLines = fileResult.getLineNumbers().isEmpty() ? 0 :
+                fileResult.getLineNumbers().stream().mapToLong(Integer::longValue).max().orElse(0);
+
         content.append("Contenido procesado: ").append(totalLines).append(" líneas\n");
         content.append("Ocurrencias encontradas: ").append(fileResult.getOccurrences()).append("\n");
-        
+
         if (!fileResult.getLineNumbers().isEmpty()) {
             content.append("Líneas: ");
             content.append(String.join(", ", fileResult.getLineNumbers().stream()
-                .map(String::valueOf).toArray(String[]::new)));
+                    .map(String::valueOf).toArray(String[]::new)));
             content.append("\n");
         }
 

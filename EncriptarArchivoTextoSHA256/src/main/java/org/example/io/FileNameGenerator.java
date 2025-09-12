@@ -6,7 +6,7 @@ import java.nio.file.Path;
 public class FileNameGenerator {
 
 
-    public String generate(Path inputFile, String suffix, String newExtension) {
+    public static String generate(Path inputFile, String suffix, String newExtension) {
         File file = inputFile.toFile();
         String name = file.getName();
 

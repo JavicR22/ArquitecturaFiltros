@@ -2,16 +2,16 @@ package org.example;
 
 import org.example.application.usecase.ConvertTextFileUseCase;
 import org.example.infrastructure.TextToBinaryFileConverter;
+import org.example.infrastructure.TextoABinarioProcess;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.sql.SQLOutput;
 
 public class Main {
     public static void main(String[] args) {
-        ConvertTextFileUseCase useCase = new ConvertTextFileUseCase(
-                new TextToBinaryFileConverter()
-        );
+
 
         try {
             if (args.length == 0) {
@@ -29,19 +29,10 @@ public class Main {
                     byte[] binaryData = buffer.toByteArray();
 
                     String ruta = new String(binaryData, StandardCharsets.UTF_8).trim();
-                    if (ruta.startsWith("\"") && ruta.endsWith("\"")) {
-                        ruta = ruta.substring(1, ruta.length() - 1);
-                    }
-                    System.err.println("Son: "+ruta);
-                    Path inputFile = Paths.get(ruta);
-
-                    if (!Files.exists(inputFile)) {
-                        System.err.println("❌ El archivo no existe: " + ruta);
-                        System.exit(1);
-                    }
+                    TextoABinarioProcess textoABinarioProcess= new TextoABinarioProcess();
+                    textoABinarioProcess.process(ruta);
 
 
-                    useCase.execute(ruta);
                 } else {
                     System.out.println("Uso:");
                     System.out.println("  java -jar ConvertirTextoABinario.jar archivo.txt");
@@ -56,12 +47,8 @@ public class Main {
 
                 } else {
 
-                    // Archivo directo
-                    useCase.execute(inputPath);
-                    System.err.println(inputPath);
-                    String envioRuta = buildBinPath(inputPath);
-                    System.out.println(envioRuta);
-                    System.out.flush();
+                    TextoABinarioProcess textoABinarioProcess =new TextoABinarioProcess();
+                    textoABinarioProcess.process(inputPath);
                 }
             } else {
                 System.out.println("Uso inválido.");
@@ -73,19 +60,5 @@ public class Main {
             System.exit(1);
         }
     }
-    private static String buildBinPath(String originalPath) {
-        Path inputFile = Paths.get(originalPath);
-        String name = inputFile.getFileName().toString();
 
-        int dotIndex = name.lastIndexOf(".");
-        String baseName = (dotIndex == -1) ? name : name.substring(0, dotIndex);
-
-        Path parent = inputFile.getParent();
-        if (parent == null) {
-            parent = Paths.get("."); // directorio actual
-        }
-
-        // Siempre termina en .bin
-        return parent.resolve(baseName + "Binario.bin").toString();
-    }
 }

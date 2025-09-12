@@ -28,6 +28,7 @@ public class Processor {
         this.decoder = decoder;
     }
 
+
     public void process() throws Exception {
         try {
             String content = inputSource.readContent();
